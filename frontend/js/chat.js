@@ -19,6 +19,7 @@ const uploadButton = document.getElementById("uploadBtn");
 /* ===== STATE ===== */
 let selectedUser = null;
 let currentRoom = null;
+let selectedFile = null;
 
 /* ===== HEADER ===== */
 document.getElementById("username").textContent = user.name;
@@ -282,27 +283,68 @@ socket.on("receive_message", (data) => {
 });
 
 /* ===== SEND TEXT ===== */
-messageForm.addEventListener("submit", (e) => {
+messageForm.addEventListener("submit", async (e) => {
   e.preventDefault();
-  const message = messageInput.value.trim();
-  if (!message) return;
+
   if (!selectedUser) {
     alert("Pilih kontak dulu");
     return;
   }
 
-  socket.emit("send_message", {
-    user: user.name,
-    to: selectedUser,
-    roomId: currentRoom,
-    message,
-    time: new Date().toLocaleTimeString([], {
-      hour: "2-digit",
-      minute: "2-digit",
-    }),
-  });
+  const message = messageInput.value.trim();
 
-  messageInput.value = "";
+  let uploadedFileUrl = "";
+  let uploadedFileName = "";
+
+  try {
+    // kalau ada file dipilih
+    if (selectedFile) {
+      const formData = new FormData();
+
+      formData.append("file", selectedFile);
+
+      const res = await fetch(
+        "https://pulsechat-production-54e0.up.railway.app/upload",
+        {
+          method: "POST",
+          body: formData,
+        },
+      );
+
+      const data = await res.json();
+
+      uploadedFileUrl = data.fileUrl;
+      uploadedFileName = data.fileName;
+    }
+
+    // kirim socket message
+    socket.emit("send_message", {
+      user: user.name,
+      to: selectedUser,
+      roomId: currentRoom,
+
+      message,
+
+      file: uploadedFileUrl,
+      fileName: uploadedFileName,
+
+      time: new Date().toLocaleTimeString([], {
+        hour: "2-digit",
+        minute: "2-digit",
+      }),
+    });
+
+    // reset
+    messageInput.value = "";
+
+    selectedFile = null;
+
+    fileInput.value = "";
+
+    document.getElementById("filePreview").style.display = "none";
+  } catch (error) {
+    console.error(error);
+  }
 });
 
 /* ===== TYPING ===== */
@@ -338,50 +380,27 @@ uploadButton.addEventListener("click", (e) => {
   fileInput.click();
 });
 
-fileInput.addEventListener("change", async (event) => {
+fileInput.addEventListener("change", (event) => {
   event.preventDefault();
   event.stopPropagation();
 
-  try {
-    if (!selectedUser) {
-      alert("Pilih kontak dulu");
-      return;
-    }
-
-    const file = fileInput.files[0];
-    if (!file) return;
-
-    const activeRoom = currentRoom;
-    const activeUser = selectedUser;
-
-    const formData = new FormData();
-    formData.append("file", file);
-
-    const res = await fetch(
-      "https://pulsechat-production-54e0.up.railway.app/upload",
-      {
-        method: "POST",
-        body: formData,
-      },
-    );
-    const data = await res.json();
-
-    socket.emit("send_message", {
-      user: user.name,
-      to: activeUser,
-      roomId: activeRoom,
-      file: data.fileUrl,
-      fileName: data.fileName,
-      time: new Date().toLocaleTimeString([], {
-        hour: "2-digit",
-        minute: "2-digit",
-      }),
-    });
-
-    fileInput.value = "";
-  } catch (error) {
-    console.error("UPLOAD ERROR:", error);
+  if (!selectedUser) {
+    alert("Pilih kontak dulu");
+    return;
   }
+
+  const file = fileInput.files[0];
+
+  if (!file) return;
+
+  // simpan file sementara
+  selectedFile = file;
+
+  // tampilkan preview
+  document.getElementById("filePreview").style.display = "flex";
+
+  // tampilkan nama file
+  document.getElementById("fileNamePreview").textContent = file.name;
 });
 
 /* ===== TAMPILKAN PESAN ===== */
@@ -418,4 +437,11 @@ function tampilkanPesan(data) {
 
 document.getElementById("mobileBackBtn").addEventListener("click", () => {
   document.querySelector(".chat-room").classList.remove("active");
+});
+
+document.getElementById("cancelFileBtn").addEventListener("click", () => {
+  selectedFile = null;
+  fileInput.value = "";
+
+  document.getElementById("filePreview").style.display = "none";
 });
