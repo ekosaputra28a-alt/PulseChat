@@ -283,9 +283,7 @@ socket.on("receive_message", (data) => {
 });
 
 socket.on("message_deleted", (messageId) => {
-  const messageEl = document.querySelector(
-    `[data-id="${messageId}"]`
-  );
+  const messageEl = document.querySelector(`[data-id="${messageId}"]`);
 
   if (messageEl) {
     messageEl.remove();
@@ -426,10 +424,13 @@ function tampilkanPesan(data) {
 
   let contentHTML = "";
   if (data.file) {
-    // render file/gambar
     contentHTML = data.file.endsWith(".pdf")
       ? `
-      <a href="${data.file}" target="_blank" class="pdf-link">
+      <a
+        href="${data.file}"
+        target="_blank"
+        class="pdf-link"
+      >
         📄 ${data.fileName || "File"}
       </a>
     `
@@ -440,19 +441,17 @@ function tampilkanPesan(data) {
       >
     `;
 
-    // tambahkan caption kalau ada
     if (data.message) {
       contentHTML += `
       <p>${data.message}</p>
     `;
     }
   } else if (data.message) {
-    // text biasa
     contentHTML = `
     <p>${data.message}</p>
   `;
   }
-
+  
   wrapper.innerHTML = `
   ${!isSelf ? `<div class="message-avatar ${colorClass}">${initial}</div>` : ""}
 
@@ -491,12 +490,14 @@ document.getElementById("cancelFileBtn").addEventListener("click", () => {
   document.getElementById("filePreview").style.display = "none";
 });
 
+
 window.deleteMessage = (messageId) => {
   const confirmDelete = confirm("Hapus pesan untuk semua orang?");
 
   if (!confirmDelete) return;
+
   socket.emit("delete_message", {
     messageId,
-    roomId: currenRoom,
+    roomId: currentRoom,
   });
 };
