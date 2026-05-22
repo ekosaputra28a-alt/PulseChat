@@ -36,7 +36,7 @@ function avatarColor(username) {
 }
 
 /* ===== SOCKET ===== */
-const socket = io("http://localhost:5000");
+const socket = io("https://pulsechat-production-54e0.up.railway.app");
 
 socket.on("disconnect", () => console.log("Socket disconnected..."));
 
@@ -77,7 +77,7 @@ socket.on("online_users", (onlineUsers) => {
 
 /* ===== LOAD KONTAK ===== */
 async function loadContacts() {
-  const res = await fetch(`http://localhost:5000/contacts?owner=${user.name}`);
+  const res = await fetch(`https://pulsechat-production-54e0.up.railway.app/contacts?owner=${user.name}`);
   const data = await res.json();
   renderContactList(data);
 }
@@ -138,7 +138,7 @@ function buatItemKontak(username) {
     messages.innerHTML = "";
     socket.emit("join_room", currentRoom);
 
-    fetch(`http://localhost:5000/messages?roomId=${currentRoom}`)
+    fetch(`https://pulsechat-production-54e0.up.railway.app/messages?roomId=${currentRoom}`)
       .then((res) => res.json())
       .then((data) => data.forEach((msg) => tampilkanPesan(msg)));
   });
@@ -165,8 +165,8 @@ searchInput.addEventListener("input", () => {
 async function cariUser(q) {
   // Fetch hasil search DAN daftar kontak sekaligus
   const [searchRes, kontakRes] = await Promise.all([
-    fetch(`http://localhost:5000/search-users?q=${q}&me=${user.name}`),
-    fetch(`http://localhost:5000/contacts?owner=${user.name}`),
+    fetch(`https://pulsechat-production-54e0.up.railway.app/search-users?q=${q}&me=${user.name}`),
+    fetch(`https://pulsechat-production-54e0.up.railway.app/contacts?owner=${user.name}`),
   ]);
 
   const results = await searchRes.json();
@@ -225,7 +225,7 @@ function tampilkanHasilSearch(results, kontakku = []) {
         btn.textContent = "...";
         btn.disabled = true;
 
-        const res = await fetch("http://localhost:5000/add-contact", {
+        const res = await fetch("https://pulsechat-production-54e0.up.railway.app/add-contact", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({ owner: user.name, contact: username }),
@@ -343,7 +343,7 @@ fileInput.addEventListener("change", async (event) => {
     const formData = new FormData();
     formData.append("file", file);
 
-    const res = await fetch("http://localhost:5000/upload", {
+    const res = await fetch("https://pulsechat-production-54e0.up.railway.app/upload", {
       method: "POST",
       body: formData,
     });

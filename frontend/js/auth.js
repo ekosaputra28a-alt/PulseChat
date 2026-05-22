@@ -25,7 +25,7 @@ registerForm.addEventListener("submit", async (e) => {
   const password = document.getElementById("registerPassword").value;
 
   try {
-    const res = await fetch("http://localhost:5000/auth/register", {
+    const res = await fetch("https://pulsechat-production-54e0.up.railway.app/auth/register", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -54,7 +54,7 @@ loginForm.addEventListener("submit", async (e) => {
   const password = document.getElementById("loginPassword").value;
 
   try {
-    const res = await fetch("http://localhost:5000/auth/login", {
+    const res = await fetch("https://pulsechat-production-54e0.up.railway.app/auth/login", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
