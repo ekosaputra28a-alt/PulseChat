@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="id">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PulseChat — Login</title>
+    <link rel="stylesheet" href="css/style.css">
+</head>
+
+<body class="auth-page">
+
+    <div class="auth-wrapper">
+
+        <!-- LOGO -->
+        <div class="auth-logo">
+            <div class="auth-logo-icon">💬</div>
+            <h1>PulseChat</h1>
+            <p>Masuk untuk mulai mengobrol</p>
+        </div>
+
+        <!-- CARD -->
+        <div class="auth-card">
+
+            
+            <!-- TABS -->
+            <div class="auth-tabs">
+                <button class="tab-btn active" id="login-tab">Masuk</button>
+                <button class="tab-btn" id="register-tab">Daftar</button>
+            </div>
+
+            <!-- LOGIN FORM -->
+            <form id="loginForm" class="auth-form active">
+                <div class="input-group">
+                    <label>Email</label>
+                    <input type="email" id="loginEmail" placeholder="nama@email.com" required>
+                </div>
+                <div class="input-group">
+                    <label>Password</label>
+                    <input type="password" id="loginPassword" placeholder="••••••••" required>
+                </div>
+                <button type="submit" class="auth-btn">Masuk</button>
+            </form>
+
+            <!-- REGISTER FORM -->
+            <form id="registerForm" class="auth-form">
+                <div class="input-group">
+                    <label>Nama</label>
+                    <input type="text" id="registerName" placeholder="Nama lengkap" required>
+                </div>
+                <div class="input-group">
+                    <label>Email</label>
+                    <input type="email" id="registerEmail" placeholder="nama@email.com" required>
+                </div>
+                <div class="input-group">
+                    <label>Password</label>
+                    <input type="password" id="registerPassword" placeholder="••••••••" required>
+                </div>
+                <button type="submit" class="auth-btn">Buat Akun</button>
+            </form>
+        </div>
+    </div>
+    <script src="js/auth.js"></script>
+</body>
+
+</html>
