@@ -11,6 +11,7 @@ import path from "path";
 import contactRoutes from "./routes/contactRoutes.js";
 
 import { connectDB, getDB } from "./config/db.js";
+import { ObjectId } from "mongodb";
 import authRoutes from "./routes/authRoutes.js";
 
 const app = express();
@@ -131,7 +132,7 @@ io.on(
 
         const message = db.collection("messages");
 
-        await message.insertOne({
+        const result = await message.insertOne({
           user: data.user,
           to: data.to || "",
           roomId: data.roomId || "",
@@ -142,11 +143,31 @@ io.on(
           createdAt: new Date(),
         });
 
+        const savedMessage = {
+          ...data,
+          _id: result.insertedId,
+        };
+
         io.to(data.roomId)
 
-          .emit("receive_message", data);
+          .emit("receive_message", savedMessage);
       },
     );
+
+
+    socket.on("delete_message", async (data) => {
+      try {
+        const db = getDB();
+        await db.collection("messages").deleteOne({
+          _id: new ObjectId(data.messageId),
+        });
+
+        io.to(data.roomId)
+          .emit("message_deleted", data.messageId);
+      } catch (error) {
+        console.error(err);
+      }
+    });
 
     /* DISCONNECT */
 

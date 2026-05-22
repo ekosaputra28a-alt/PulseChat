@@ -282,6 +282,16 @@ socket.on("receive_message", (data) => {
   tampilkanPesan(data);
 });
 
+socket.on("message_deleted", (messageId) => {
+  const messageEl = document.querySelector(
+    `[data-id="${messageId}"]`
+  );
+
+  if (messageEl) {
+    messageEl.remove();
+  }
+});
+
 /* ===== SEND TEXT ===== */
 messageForm.addEventListener("submit", async (e) => {
   e.preventDefault();
@@ -410,6 +420,7 @@ function tampilkanPesan(data) {
   const colorClass = data.user ? avatarColor(data.user) : "";
 
   const wrapper = document.createElement("div");
+  wrapper.dataset.id = data._id;
   wrapper.classList.add("message-wrapper");
   if (isSelf) wrapper.classList.add("self");
 
@@ -443,13 +454,27 @@ function tampilkanPesan(data) {
   }
 
   wrapper.innerHTML = `
-    ${!isSelf ? `<div class="message-avatar ${colorClass}">${initial}</div>` : ""}
-    <div class="message ${isSelf ? "self" : ""}">
-      ${!isSelf ? `<strong>${data.user || "Unknown"}</strong>` : ""}
-      ${contentHTML}
-      <span class="message-time">${data.time}</span>
-    </div>
-  `;
+  ${!isSelf ? `<div class="message-avatar ${colorClass}">${initial}</div>` : ""}
+
+  <div class="message ${isSelf ? "self" : ""}">
+
+    ${
+      isSelf
+        ? `
+          <button
+            class="delete-btn"
+            onclick="deleteMessage('${data._id}')"
+          >
+            ⋮
+          </button>
+        `
+        : ""
+    }
+    ${!isSelf ? `<strong>${data.user || "Unknown"}</strong>` : ""}
+    ${contentHTML}
+    <span class="message-time">${data.time}</span>
+  </div>
+`;
 
   messages.appendChild(wrapper);
   messages.scrollTop = messages.scrollHeight;
@@ -465,3 +490,13 @@ document.getElementById("cancelFileBtn").addEventListener("click", () => {
 
   document.getElementById("filePreview").style.display = "none";
 });
+
+window.deleteMessage = (messageId) => {
+  const confirmDelete = confirm("Hapus pesan untuk semua orang?");
+
+  if (!confirmDelete) return;
+  socket.emit("delete_message", {
+    messageId,
+    roomId: currenRoom,
+  });
+};
