@@ -77,7 +77,9 @@ socket.on("online_users", (onlineUsers) => {
 
 /* ===== LOAD KONTAK ===== */
 async function loadContacts() {
-  const res = await fetch(`https://pulsechat-production-54e0.up.railway.app/contacts?owner=${user.name}`);
+  const res = await fetch(
+    `https://pulsechat-production-54e0.up.railway.app/contacts?owner=${user.name}`,
+  );
   const data = await res.json();
   renderContactList(data);
 }
@@ -130,6 +132,9 @@ function buatItemKontak(username) {
       .querySelectorAll(".user-item")
       .forEach((i) => i.classList.remove("active"));
     item.classList.add("active");
+    if (window.innerWidth <= 768) {
+      document.querySelector(".chat-room").classList.add("active");
+    }
 
     document.getElementById("chatHeaderName").textContent = username;
     document.getElementById("chatHeaderAvatar").textContent = initial;
@@ -138,7 +143,9 @@ function buatItemKontak(username) {
     messages.innerHTML = "";
     socket.emit("join_room", currentRoom);
 
-    fetch(`https://pulsechat-production-54e0.up.railway.app/messages?roomId=${currentRoom}`)
+    fetch(
+      `https://pulsechat-production-54e0.up.railway.app/messages?roomId=${currentRoom}`,
+    )
       .then((res) => res.json())
       .then((data) => data.forEach((msg) => tampilkanPesan(msg)));
   });
@@ -165,8 +172,12 @@ searchInput.addEventListener("input", () => {
 async function cariUser(q) {
   // Fetch hasil search DAN daftar kontak sekaligus
   const [searchRes, kontakRes] = await Promise.all([
-    fetch(`https://pulsechat-production-54e0.up.railway.app/search-users?q=${q}&me=${user.name}`),
-    fetch(`https://pulsechat-production-54e0.up.railway.app/contacts?owner=${user.name}`),
+    fetch(
+      `https://pulsechat-production-54e0.up.railway.app/search-users?q=${q}&me=${user.name}`,
+    ),
+    fetch(
+      `https://pulsechat-production-54e0.up.railway.app/contacts?owner=${user.name}`,
+    ),
   ]);
 
   const results = await searchRes.json();
@@ -225,11 +236,14 @@ function tampilkanHasilSearch(results, kontakku = []) {
         btn.textContent = "...";
         btn.disabled = true;
 
-        const res = await fetch("https://pulsechat-production-54e0.up.railway.app/add-contact", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ owner: user.name, contact: username }),
-        });
+        const res = await fetch(
+          "https://pulsechat-production-54e0.up.railway.app/add-contact",
+          {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ owner: user.name, contact: username }),
+          },
+        );
         const data = await res.json();
 
         if (res.ok) {
@@ -343,10 +357,13 @@ fileInput.addEventListener("change", async (event) => {
     const formData = new FormData();
     formData.append("file", file);
 
-    const res = await fetch("https://pulsechat-production-54e0.up.railway.app/upload", {
-      method: "POST",
-      body: formData,
-    });
+    const res = await fetch(
+      "https://pulsechat-production-54e0.up.railway.app/upload",
+      {
+        method: "POST",
+        body: formData,
+      },
+    );
     const data = await res.json();
 
     socket.emit("send_message", {

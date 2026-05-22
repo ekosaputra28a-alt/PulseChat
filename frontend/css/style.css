@@ -799,3 +799,76 @@ body {
     background: rgba(255, 255, 255, .12);
     border-radius: 10px;
 }
+
+/* ===== MOBILE RESPONSIVE ===== */
+@media (max-width: 768px) {
+
+    .app-layout {
+        width: 100%;
+        height: 100vh;
+        overflow: hidden;
+    }
+
+    /* Sidebar full layar */
+    .sidebar {
+        width: 100%;
+        min-width: 100%;
+        height: 100vh;
+    }
+
+    /* Chat hidden default di mobile */
+    .chat-room {
+        position: fixed;
+        top: 0;
+        left: 100%;
+        width: 100%;
+        height: 100vh;
+        z-index: 999;
+        transition: left .25s ease;
+    }
+
+    /* Saat chat dibuka */
+    .chat-room.active {
+        left: 0;
+    }
+
+    /* Bubble lebih lebar */
+    .message-wrapper,
+    .message-wrapper.self {
+        max-width: 88%;
+    }
+
+    .messages {
+        padding: 10px;
+    }
+
+    .message-image {
+        max-width: 220px;
+    }
+
+    .sidebar-header,
+    .chat-header {
+        padding: 10px 12px;
+    }
+
+    .user-item {
+        padding: 12px;
+    }
+
+    .search-box {
+        margin: 8px;
+    }
+
+    .message-form input[type="text"] {
+        font-size: 16px;
+    }
+
+    /* Auth page */
+    .auth-wrapper {
+        padding: 20px 14px;
+    }
+
+    .auth-card {
+        padding: 24px 18px;
+    }
+}
