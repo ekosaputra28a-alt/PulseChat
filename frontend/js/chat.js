@@ -418,7 +418,7 @@ function tampilkanPesan(data) {
   const colorClass = data.user ? avatarColor(data.user) : "";
 
   const wrapper = document.createElement("div");
-  wrapper.dataset.id = data._id;
+  wrapper.dataset.id = data._id?.toString();
   wrapper.classList.add("message-wrapper");
   if (isSelf) wrapper.classList.add("self");
 
@@ -451,7 +451,7 @@ function tampilkanPesan(data) {
     <p>${data.message}</p>
   `;
   }
-  
+
   wrapper.innerHTML = `
   ${!isSelf ? `<div class="message-avatar ${colorClass}">${initial}</div>` : ""}
 
@@ -462,7 +462,7 @@ function tampilkanPesan(data) {
         ? `
           <button
             class="delete-btn"
-            onclick="deleteMessage('${data._id}')"
+            onclick="deleteMessage('${data._id?.toString()}')"
           >
             ⋮
           </button>
@@ -489,7 +489,6 @@ document.getElementById("cancelFileBtn").addEventListener("click", () => {
 
   document.getElementById("filePreview").style.display = "none";
 });
-
 
 window.deleteMessage = (messageId) => {
   const confirmDelete = confirm("Hapus pesan untuk semua orang?");
