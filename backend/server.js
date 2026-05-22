@@ -17,8 +17,6 @@ const app = express();
 
 const server = http.createServer(app);
 
-
-
 const io = new Server(server, {
   cors: {
     origin: "*",
@@ -54,7 +52,7 @@ app.use("/auth", authRoutes);
 
 app.post("/upload", upload.single("file"), (req, res) => {
   res.json({
-    fileUrl: `http://localhost:5000/upload/${req.file.filename}`,
+    fileUrl: `https://pulsechat-production-54e0.up.railway.app/upload/${req.file.filename}`,
     fileName: req.file.originalname,
   });
 });
@@ -84,7 +82,6 @@ app.get(
 );
 
 app.use("/", contactRoutes);
-
 
 io.on(
   "connection",
