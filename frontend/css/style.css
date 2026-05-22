@@ -602,7 +602,6 @@ body {
     background: var(--bg-input);
     border-radius: 24px;
     padding: 5px 6px 5px 16px;
-    padding-bottom: max(10px, env(safe-area-inset-bottom));
 }
 
 .message-form input[type="text"] {
@@ -842,7 +841,7 @@ body {
         top: 0;
         left: 100%;
         width: 100%;
-        height: 100vh;
+        height: 100dvh;
         z-index: 999;
         transition: left .25s ease;
         background: #0b141a;
@@ -860,7 +859,7 @@ body {
     }
 
     .messages {
-        padding: 10px;
+        padding-bottom: 110px;
     }
 
     .message-image {
@@ -870,6 +869,11 @@ body {
     .sidebar-header,
     .chat-header {
         padding: 10px 12px;
+    }
+
+    .chat-input-area {
+        padding-bottom:
+            calc(10px + env(safe-area-inset-bottom));
     }
 
     .user-item {
@@ -907,4 +911,3 @@ body {
         margin-right: 10px;
     }
 }
-
