@@ -414,12 +414,32 @@ function tampilkanPesan(data) {
   if (isSelf) wrapper.classList.add("self");
 
   let contentHTML = "";
-  if (data.message) {
-    contentHTML = `<p>${data.message}</p>`;
-  } else if (data.file) {
+  if (data.file) {
+    // render file/gambar
     contentHTML = data.file.endsWith(".pdf")
-      ? `<a href="${data.file}" target="_blank" class="pdf-link">📄 ${data.fileName || "File"}</a>`
-      : `<img src="${data.file}" class="message-image" onerror="this.style.display='none'">`;
+      ? `
+      <a href="${data.file}" target="_blank" class="pdf-link">
+        📄 ${data.fileName || "File"}
+      </a>
+    `
+      : `
+      <img
+        src="${data.file}"
+        class="message-image"
+      >
+    `;
+
+    // tambahkan caption kalau ada
+    if (data.message) {
+      contentHTML += `
+      <p>${data.message}</p>
+    `;
+    }
+  } else if (data.message) {
+    // text biasa
+    contentHTML = `
+    <p>${data.message}</p>
+  `;
   }
 
   wrapper.innerHTML = `
