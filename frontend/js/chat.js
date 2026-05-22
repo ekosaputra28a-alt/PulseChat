@@ -415,3 +415,7 @@ function tampilkanPesan(data) {
   messages.appendChild(wrapper);
   messages.scrollTop = messages.scrollHeight;
 }
+
+document.getElementById("mobileBackBtn").addEventListener("click", () => {
+  document.querySelector(".chat-room").classList.remove("active");
+});
