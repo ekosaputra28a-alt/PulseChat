@@ -428,9 +428,7 @@ fileInput.addEventListener("change", (event) => {
 /* ===== TAMPILKAN PESAN ===== */
 function tampilkanPesan(data) {
   const isSelf = data.user === user.name;
-  console.log("data.user:", data.user);
-  console.log("user.name:", user.name);
-  console.log("isSelf:", isSelf);
+   if (!isSelf) alert(`data.user: ${data.user} | user.name: ${user.name}`);
   const initial = data.user ? data.user.charAt(0).toUpperCase() : "?";
   const colorClass = data.user ? avatarColor(data.user) : "";
 
