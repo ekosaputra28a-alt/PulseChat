@@ -153,7 +153,10 @@ function buatItemKontak(username) {
       `https://pulsechat-production-54e0.up.railway.app/messages?roomId=${currentRoom}`,
     )
       .then((res) => res.json())
-      .then((data) => data.forEach((msg) => tampilkanPesan(msg)));
+      .then((data) => {
+        alert("load history: " + data.length + " pesan");
+        data.forEach((msg) => tampilkanPesan(msg));
+      });
   });
 
   return item;
