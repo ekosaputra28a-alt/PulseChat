@@ -557,3 +557,12 @@ function clearSearchHighlight() {
     p.textContent = p.textContent;
   });
 }
+
+// Tambah di paling bawah chat.js
+document.querySelector(".sidebar-icons .icon-btn:last-child").addEventListener("click", () => {
+    if (confirm("Keluar dari PulseChat?")) {
+        localStorage.removeItem("token");
+        localStorage.removeItem("user");
+        window.location.href = "auth.html";
+    }
+});
