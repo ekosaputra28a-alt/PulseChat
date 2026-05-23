@@ -1,5 +1,4 @@
 window.addEventListener("beforeunload", (e) => {
-  console.trace("🔴 PAGE RELOADING:");
   e.preventDefault();
   e.returnValue = "";
 });
@@ -42,16 +41,14 @@ const socket = io("https://pulsechat-production-54e0.up.railway.app");
 socket.on("disconnect", () => console.log("Socket disconnected..."));
 
 socket.on("reconnect", () => {
-  console.log("Reconnected, rejoining...");
   socket.emit("user_join", user.name);
   loadContacts();
   if (currentRoom) socket.emit("join_room", currentRoom);
 });
 
 socket.on("connect", () => {
-  console.log("Connected:", socket.id);
   socket.emit("user_join", user.name);
-  loadContacts(); // ← dipanggil setelah socket benar-benar connect
+  loadContacts();
 });
 
 /* ===== ONLINE USERS ===== */
@@ -133,6 +130,7 @@ function buatItemKontak(username) {
       .querySelectorAll(".user-item")
       .forEach((i) => i.classList.remove("active"));
     item.classList.add("active");
+
     if (window.innerWidth <= 768) {
       document.querySelector(".chat-room").classList.add("active");
     }
@@ -143,20 +141,13 @@ function buatItemKontak(username) {
 
     messages.innerHTML = "";
     socket.emit("join_room", currentRoom);
-
-    socket.emit("mark_read", {
-      roomId: currentRoom,
-      reader: user.name,
-    });
+    socket.emit("mark_read", { roomId: currentRoom, reader: user.name });
 
     fetch(
       `https://pulsechat-production-54e0.up.railway.app/messages?roomId=${currentRoom}`,
     )
       .then((res) => res.json())
-      .then((data) => {
-        alert("load history: " + data.length + " pesan");
-        data.forEach((msg) => tampilkanPesan(msg));
-      });
+      .then((data) => data.forEach((msg) => tampilkanPesan(msg)));
   });
 
   return item;
@@ -168,18 +159,15 @@ let searchTimeout;
 
 searchInput.addEventListener("input", () => {
   const q = searchInput.value.trim();
-
   if (!q) {
     loadContacts();
     return;
   }
-
   clearTimeout(searchTimeout);
   searchTimeout = setTimeout(() => cariUser(q), 400);
 });
 
 async function cariUser(q) {
-  // Fetch hasil search DAN daftar kontak sekaligus
   const [searchRes, kontakRes] = await Promise.all([
     fetch(
       `https://pulsechat-production-54e0.up.railway.app/search-users?q=${q}&me=${user.name}`,
@@ -188,10 +176,8 @@ async function cariUser(q) {
       `https://pulsechat-production-54e0.up.railway.app/contacts?owner=${user.name}`,
     ),
   ]);
-
   const results = await searchRes.json();
   const kontakku = await kontakRes.json();
-
   tampilkanHasilSearch(results, kontakku);
 }
 
@@ -210,7 +196,7 @@ function tampilkanHasilSearch(results, kontakku = []) {
   results.forEach(({ username }) => {
     const initial = username.charAt(0).toUpperCase();
     const colorClass = avatarColor(username);
-    const sudahKontak = kontakku.includes(username); // cek sudah kontak atau belum
+    const sudahKontak = kontakku.includes(username);
 
     const item = document.createElement("div");
     item.classList.add("user-item");
@@ -237,10 +223,8 @@ function tampilkanHasilSearch(results, kontakku = []) {
     `;
 
     if (!sudahKontak) {
-      // Belum kontak — tombol add
       item.querySelector(".add-btn").addEventListener("click", async (e) => {
         e.stopPropagation();
-
         const btn = e.target;
         btn.textContent = "...";
         btn.disabled = true;
@@ -253,7 +237,6 @@ function tampilkanHasilSearch(results, kontakku = []) {
             body: JSON.stringify({ owner: user.name, contact: username }),
           },
         );
-        const data = await res.json();
 
         if (res.ok) {
           btn.textContent = "✓";
@@ -265,7 +248,6 @@ function tampilkanHasilSearch(results, kontakku = []) {
         }
       });
     } else {
-      // Sudah kontak — klik langsung buka chat
       item.addEventListener("click", () => {
         searchInput.value = "";
         loadContacts().then(() => {
@@ -285,7 +267,6 @@ function tampilkanHasilSearch(results, kontakku = []) {
 
 /* ===== RECEIVE MESSAGE ===== */
 socket.on("receive_message", (data) => {
-  alert("receive_message: " + data.user);
   if (!currentRoom) return;
   if (data.roomId !== currentRoom) return;
   tampilkanPesan(data);
@@ -293,18 +274,14 @@ socket.on("receive_message", (data) => {
 
 socket.on("message_deleted", (messageId) => {
   const messageEl = document.querySelector(`[data-id="${messageId}"]`);
-
-  if (messageEl) {
-    messageEl.remove();
-  }
+  if (messageEl) messageEl.remove();
 });
 
 socket.on("messages_read", ({ roomId }) => {
   if (roomId !== currentRoom) return;
-
   document.querySelectorAll(".message-status").forEach((el) => {
     el.textContent = "✓✓";
-    el.classList.add("read");
+    el.style.color = "#53bdeb";
   });
 });
 
@@ -318,17 +295,13 @@ messageForm.addEventListener("submit", async (e) => {
   }
 
   const message = messageInput.value.trim();
-
   let uploadedFileUrl = "";
   let uploadedFileName = "";
 
   try {
-    // kalau ada file dipilih
     if (selectedFile) {
       const formData = new FormData();
-
       formData.append("file", selectedFile);
-
       const res = await fetch(
         "https://pulsechat-production-54e0.up.railway.app/upload",
         {
@@ -336,37 +309,27 @@ messageForm.addEventListener("submit", async (e) => {
           body: formData,
         },
       );
-
       const data = await res.json();
-
       uploadedFileUrl = data.fileUrl;
       uploadedFileName = data.fileName;
     }
 
-    // kirim socket message
     socket.emit("send_message", {
       user: user.name,
       to: selectedUser,
       roomId: currentRoom,
-
       message,
-
       file: uploadedFileUrl,
       fileName: uploadedFileName,
-
       time: new Date().toLocaleTimeString([], {
         hour: "2-digit",
         minute: "2-digit",
       }),
     });
 
-    // reset
     messageInput.value = "";
-
     selectedFile = null;
-
     fileInput.value = "";
-
     document.getElementById("filePreview").style.display = "none";
   } catch (error) {
     console.error(error);
@@ -416,30 +379,16 @@ fileInput.addEventListener("change", (event) => {
   }
 
   const file = fileInput.files[0];
-
   if (!file) return;
 
-  // simpan file sementara
   selectedFile = file;
-
-  // tampilkan preview
   document.getElementById("filePreview").style.display = "flex";
-
-  // tampilkan nama file
   document.getElementById("fileNamePreview").textContent = file.name;
 });
 
 /* ===== TAMPILKAN PESAN ===== */
 function tampilkanPesan(data) {
   const isSelf = data.user === user.name;
-
-  // DEBUG VISUAL
-  const debug = document.createElement("div");
-  debug.style =
-    "background:red;color:white;padding:4px;font-size:12px;position:fixed;top:0;left:0;z-index:9999;";
-  debug.textContent = `user=${data.user} | me=${user.name} | isSelf=${isSelf}`;
-  document.body.appendChild(debug);
-
   const initial = data.user ? data.user.charAt(0).toUpperCase() : "?";
   const colorClass = data.user ? avatarColor(data.user) : "";
 
@@ -451,49 +400,27 @@ function tampilkanPesan(data) {
   let contentHTML = "";
   if (data.file) {
     contentHTML = data.file.endsWith(".pdf")
-      ? `
-      <a
-        href="${data.file}"
-        target="_blank"
-        class="pdf-link"
-      >
-        📄 ${data.fileName || "File"}
-      </a>
-    `
-      : `
-      <img
-        src="${data.file}"
-        class="message-image"
-      >
-    `;
-
-    if (data.message) {
-      contentHTML += `
-      <p>${data.message}</p>
-    `;
-    }
+      ? `<a href="${data.file}" target="_blank" class="pdf-link">📄 ${data.fileName || "File"}</a>`
+      : `<img src="${data.file}" class="message-image">`;
+    if (data.message) contentHTML += `<p>${data.message}</p>`;
   } else if (data.message) {
-    contentHTML = `
-    <p>${data.message}</p>
-  `;
+    contentHTML = `<p>${data.message}</p>`;
   }
 
   wrapper.innerHTML = `
-  ${!isSelf ? `<div class="message-avatar ${colorClass}">${initial}</div>` : ""}
-
-  <div class="message ${isSelf ? "self" : ""}">
-    ${!isSelf ? `<strong>${data.user || "Unknown"}</strong>` : ""}
-    ${contentHTML}
-    <div class="message-meta">
-      <span class="message-time">${data.time}</span>
-      ${isSelf ? `<span class="message-status">✓</span>` : ""}
+    ${!isSelf ? `<div class="message-avatar ${colorClass}">${initial}</div>` : ""}
+    <div class="message ${isSelf ? "self" : ""}">
+      ${!isSelf ? `<strong>${data.user || "Unknown"}</strong>` : ""}
+      ${contentHTML}
+      <div class="message-meta">
+        <span class="message-time">${data.time}</span>
+        ${isSelf ? `<span class="message-status" style="font-size:13px;color:#667781;margin-left:4px;">${data.read ? "✓✓" : "✓"}</span>` : ""}
+      </div>
     </div>
-  </div>
-`;
+  `;
 
   if (isSelf) {
     let pressTimer;
-
     const onPressStart = () => {
       pressTimer = setTimeout(() => {
         if (confirm("Hapus pesan untuk semua orang?")) {
@@ -504,7 +431,6 @@ function tampilkanPesan(data) {
         }
       }, 600);
     };
-
     const onPressEnd = () => clearTimeout(pressTimer);
 
     wrapper.addEventListener("mousedown", onPressStart);
@@ -533,7 +459,6 @@ document.getElementById("mobileBackBtn").addEventListener("click", () => {
 document.getElementById("cancelFileBtn").addEventListener("click", () => {
   selectedFile = null;
   fileInput.value = "";
-
   document.getElementById("filePreview").style.display = "none";
 });
 
@@ -575,8 +500,7 @@ searchChatInput.addEventListener("input", () => {
   }
 
   document.querySelectorAll(".message p").forEach((p) => {
-    const text = p.textContent.toLowerCase();
-    if (text.includes(q)) {
+    if (p.textContent.toLowerCase().includes(q)) {
       searchResults.push(p);
       p.innerHTML = p.textContent.replace(
         new RegExp(`(${q})`, "gi"),
@@ -610,12 +534,10 @@ function updateSearchActive() {
   document.querySelectorAll(".msg-highlight-active").forEach((el) => {
     el.classList.remove("msg-highlight-active");
   });
-
   const active = searchResults[searchIndex];
   active.querySelectorAll(".msg-highlight").forEach((el) => {
     el.classList.add("msg-highlight-active");
   });
-
   active.scrollIntoView({ behavior: "smooth", block: "center" });
   searchChatCount.textContent = `${searchIndex + 1} / ${searchResults.length}`;
 }
