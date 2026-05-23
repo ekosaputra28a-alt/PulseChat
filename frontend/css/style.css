@@ -855,6 +855,66 @@ body {
     display: none;
 }
 
+/* ==== SEARCH CHAT ===== */
+
+.search-chat-bar {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 8px 16px;
+    background: var(--bg-panel);
+    border-bottom: 1px solid var(--border);
+    flex-shrink: 0;
+}
+
+.search-chat-bar input {
+    flex: 1;
+    border: none;
+    background: var(--bg-input);
+    outline: none;
+    font-size: 14px;
+    color: var(--text-primary);
+    font-family: inherit;
+    padding: 8px 12px;
+    border-radius: 8px;
+}
+
+.search-chat-bar input::placeholder {
+    color: var(--text-muted);
+}
+
+#searchChatCount {
+    font-size: 13px;
+    color: var(--text-secondary);
+    white-space: nowrap;
+}
+
+.search-chat-bar button {
+    border: none;
+    background: transparent;
+    color: var (var(--text-secondary));
+    cursor: pointer;
+    font-size: 14px;
+    padding: 4px 8px;
+    border-radius: 6px;
+}
+
+.search-chat-bar:hover {
+    background: var (var(--bg-hover));
+    color: var(--text-primary);
+}
+
+.msg-highlight {
+    background: #f0c040;
+    color: #000;
+    border-radius: 3px;
+}
+
+.msg-highlight-active {
+    background: #f07840;
+    color: #fff;
+}
+
 /* ===== MOBILE RESPONSIVE ===== */
 @media (max-width: 768px) {
 
@@ -881,6 +941,7 @@ body {
         z-index: 999;
         transition: left .25s ease;
         background: #0b141a;
+        overflow: hidden;
     }
 
     /* Saat chat dibuka */

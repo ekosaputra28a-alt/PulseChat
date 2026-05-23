@@ -507,3 +507,90 @@ document.getElementById("cancelFileBtn").addEventListener("click", () => {
 
   document.getElementById("filePreview").style.display = "none";
 });
+
+/* ===== SEARCH PESAN ===== */
+const searchChatBar = document.getElementById("searchChatBar");
+const searchChatInput = document.getElementById("searchChatInput");
+const searchChatCount = document.getElementById("searchChatCount");
+const searchChatPrev = document.getElementById("searchChatPrev");
+const searchChatNext = document.getElementById("searchChatNext");
+const searchChatClose = document.getElementById("searchChatClose");
+
+let searchResults = [];
+let searchIndex = 0;
+
+document.querySelector(".chat-header-actions .icon-btn").addEventListener("click", () => {
+    searchChatBar.style.display = "flex";
+    searchChatInput.focus();
+});
+
+searchChatClose.addEventListener("click", () => {
+    searchChatBar.style.display = "none";
+    searchChatInput.value = "";
+    clearSearchHighlight();
+    searchResults = [];
+    searchChatCount.textContent = "";
+});
+
+searchChatInput.addEventListener("input", () => {
+    const q = searchChatInput.value.trim().toLowerCase();
+    clearSearchHighlight();
+    searchResults = [];
+    searchIndex = 0;
+
+    if (!q) {
+        searchChatCount.textContent = "";
+        return;
+    }
+
+    document.querySelectorAll(".message p").forEach((p) => {
+        const text = p.textContent.toLowerCase();
+        if (text.includes(q)) {
+            searchResults.push(p);
+            p.innerHTML = p.textContent.replace(
+                new RegExp(`(${q})`, "gi"),
+                `<mark class="msg-highlight">$1</mark>`
+            );
+        }
+    });
+
+    if (searchResults.length === 0) {
+        searchChatCount.textContent = "Tidak ditemukan";
+        return;
+    }
+
+    searchIndex = 0;
+    updateSearchActive();
+});
+
+searchChatNext.addEventListener("click", () => {
+    if (!searchResults.length) return;
+    searchIndex = (searchIndex + 1) % searchResults.length;
+    updateSearchActive();
+});
+
+searchChatPrev.addEventListener("click", () => {
+    if (!searchResults.length) return;
+    searchIndex = (searchIndex - 1 + searchResults.length) % searchResults.length;
+    updateSearchActive();
+});
+
+function updateSearchActive() {
+    document.querySelectorAll(".msg-highlight-active").forEach((el) => {
+        el.classList.remove("msg-highlight-active");
+    });
+
+    const active = searchResults[searchIndex];
+    active.querySelectorAll(".msg-highlight").forEach((el) => {
+        el.classList.add("msg-highlight-active");
+    });
+
+    active.scrollIntoView({ behavior: "smooth", block: "center" });
+    searchChatCount.textContent = `${searchIndex + 1} / ${searchResults.length}`;
+}
+
+function clearSearchHighlight() {
+    document.querySelectorAll(".message p").forEach((p) => {
+        p.textContent = p.textContent;
+    });
+}
