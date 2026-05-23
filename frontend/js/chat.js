@@ -282,6 +282,7 @@ function tampilkanHasilSearch(results, kontakku = []) {
 
 /* ===== RECEIVE MESSAGE ===== */
 socket.on("receive_message", (data) => {
+  alert("receive_message: " + data.user);
   if (!currentRoom) return;
   if (data.roomId !== currentRoom) return;
   tampilkanPesan(data);
