@@ -456,7 +456,7 @@ function tampilkanPesan(data) {
   ${!isSelf ? `<div class="message-avatar ${colorClass}">${initial}</div>` : ""}
 
   <div class="message ${isSelf ? "self" : ""}">
-    ${!isSelf ? `<strong>$:data.user || "Unkonw"}</strong>` : ""}
+    ${!isSelf ? `<strong>$:{data.user || "Unkonw"}</strong>` : ""}
     ${contentHTML}
     <span class="message-time">${data.time}</span>
   </div>
@@ -467,7 +467,7 @@ function tampilkanPesan(data) {
 
     const onPressStart = () => {
       pressTimer = setTimeout(() => {
-        if (consfirm("Hapus pesan untuk semua orang?")) {
+        if (confirm("Hapus pesan untuk semua orang?")) {
           socket.emit("delete_message", {
             messageId: data._id?.toString(),
             roomId: currentRoom,
@@ -481,7 +481,14 @@ function tampilkanPesan(data) {
     wrapper.addEventListener("mousedown", onPressStart);
     wrapper.addEventListener("mouseup", onPressEnd);
     wrapper.addEventListener("mouseleave", onPressEnd);
-    wrapper.addEventListener("touchstart", onPressStart);
+    wrapper.addEventListener(
+      "touchstart",
+      (e) => {
+        e.preventDefault();
+        onPressStart();
+      },
+      { passive: false },
+    );
     wrapper.addEventListener("touchend", onPressEnd);
     wrapper.addEventListener("touchcancel", onPressEnd);
   }
@@ -500,5 +507,3 @@ document.getElementById("cancelFileBtn").addEventListener("click", () => {
 
   document.getElementById("filePreview").style.display = "none";
 });
-
-

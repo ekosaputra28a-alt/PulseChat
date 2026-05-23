@@ -385,6 +385,9 @@ body {
     gap: 8px;
     max-width: 68%;
     animation: msgPop .2s ease;
+    -webkit-user-select: none;
+    user-select: none;
+    -webkit-touch-callout: none;
 }
 
 .message-wrapper.self {
