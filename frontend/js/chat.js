@@ -432,7 +432,14 @@ fileInput.addEventListener("change", (event) => {
 /* ===== TAMPILKAN PESAN ===== */
 function tampilkanPesan(data) {
   const isSelf = data.user === user.name;
-  alert(`data.user="${data.user}" user.name="${user.name}" isSelf=${isSelf}`);
+
+  // DEBUG VISUAL
+  const debug = document.createElement("div");
+  debug.style =
+    "background:red;color:white;padding:4px;font-size:12px;position:fixed;top:0;left:0;z-index:9999;";
+  debug.textContent = `user=${data.user} | me=${user.name} | isSelf=${isSelf}`;
+  document.body.appendChild(debug);
+
   const initial = data.user ? data.user.charAt(0).toUpperCase() : "?";
   const colorClass = data.user ? avatarColor(data.user) : "";
 
