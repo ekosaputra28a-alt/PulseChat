@@ -472,6 +472,19 @@ body {
     padding: 4px 4px 6px;
 }
 
+.message-meta {
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    gap: 4px;
+    margin-top: 4px;
+}
+
+.message-time {
+    font-size: 11px;
+    color: var(--text-muted);
+}
+
 .message:has(.message-image) .message-time {
     padding: 0 6px;
 }
@@ -492,10 +505,8 @@ body {
 }
 
 .message-time {
-    display: block;
     font-size: 11px;
     color: var(--text-muted);
-    text-align: right;
     margin-top: 4px;
 }
 
@@ -896,7 +907,7 @@ body {
 .search-chat-bar button {
     border: none;
     background: transparent;
-    color: var (var(--text-secondary));
+    color: var (--text-secondary);
     cursor: pointer;
     font-size: 14px;
     padding: 4px 8px;
@@ -904,7 +915,7 @@ body {
 }
 
 .search-chat-bar:hover {
-    background: var (var(--bg-hover));
+    background: var (--bg-hover);
     color: var(--text-primary);
 }
 

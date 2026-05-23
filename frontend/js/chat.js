@@ -470,12 +470,14 @@ function tampilkanPesan(data) {
   ${!isSelf ? `<div class="message-avatar ${colorClass}">${initial}</div>` : ""}
 
   <div class="message ${isSelf ? "self" : ""}">
-    ${!isSelf ? `<strong>${data.user || "Unknow"}</strong>` : ""}
+    ${!isSelf ? `<strong>${data.user || "Unknown"}</strong>` : ""}
     ${contentHTML}
-    <span class="message-time">${data.time}</span>
-    ${isSelf ? `<span class="message-status ${data.read ? "read" : ""}">${data.read ? "✓✓" : "✓"}</span>` : ""}
+    <div class="message-meta">
+      <span class="message-time">${data.time}</span>
+      ${isSelf ? `<span class="message-status ${data.read ? "read" : ""}">${data.read ? "✓✓" : "✓"}</span>` : ""}
+    </div>
   </div>
-  `;
+`;
 
   if (isSelf) {
     let pressTimer;
