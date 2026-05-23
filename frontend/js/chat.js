@@ -456,7 +456,7 @@ function tampilkanPesan(data) {
   ${!isSelf ? `<div class="message-avatar ${colorClass}">${initial}</div>` : ""}
 
   <div class="message ${isSelf ? "self" : ""}">
-    ${!isSelf ? `<strong>${data.user || "Unkonw"}</strong>` : ""}
+    ${!isSelf ? `<strong>${data.user || "Unknow"}</strong>` : ""}
     ${contentHTML}
     <span class="message-time">${data.time}</span>
   </div>
