@@ -456,24 +456,35 @@ function tampilkanPesan(data) {
   ${!isSelf ? `<div class="message-avatar ${colorClass}">${initial}</div>` : ""}
 
   <div class="message ${isSelf ? "self" : ""}">
-
-    ${
-      isSelf
-        ? `
-          <button
-            class="delete-btn"
-            onclick="deleteMessage('${data._id?.toString()}')"
-          >
-            ⋮
-          </button>
-        `
-        : ""
-    }
-    ${!isSelf ? `<strong>${data.user || "Unknown"}</strong>` : ""}
+    ${!isSelf ? `<strong>$:data.user || "Unkonw"}</strong>` : ""}
     ${contentHTML}
     <span class="message-time">${data.time}</span>
   </div>
-`;
+  `;
+
+  if (isSelf) {
+    let pressTimer;
+
+    const onPressStart = () => {
+      pressTimer = setTimeout(() => {
+        if (consfirm("Hapus pesan untuk semua orang?")) {
+          socket.emit("delete_message", {
+            messageId: data._id?.toString(),
+            roomId: currentRoom,
+          });
+        }
+      }, 600);
+    };
+
+    const onPressEnd = () => clearTimeout(pressTimer);
+
+    wrapper.addEventListener("mousedown", onPressStart);
+    wrapper.addEventListener("mouseup", onPressEnd);
+    wrapper.addEventListener("mouseleave", onPressEnd);
+    wrapper.addEventListener("touchstart", onPressStart);
+    wrapper.addEventListener("touchend", onPressEnd);
+    wrapper.addEventListener("touchcancel", onPressEnd);
+  }
 
   messages.appendChild(wrapper);
   messages.scrollTop = messages.scrollHeight;
@@ -490,13 +501,4 @@ document.getElementById("cancelFileBtn").addEventListener("click", () => {
   document.getElementById("filePreview").style.display = "none";
 });
 
-window.deleteMessage = (messageId) => {
-  const confirmDelete = confirm("Hapus pesan untuk semua orang?");
 
-  if (!confirmDelete) return;
-
-  socket.emit("delete_message", {
-    messageId,
-    roomId: currentRoom,
-  });
-};
