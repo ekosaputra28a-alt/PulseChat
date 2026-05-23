@@ -6,7 +6,7 @@ window.addEventListener("beforeunload", (e) => {
 const user = JSON.parse(localStorage.getItem("user"));
 if (!user) window.location.href = "auth.html";
 
-const toke = localStorage.getItem("token");
+const token = localStorage.getItem("token");
 function authHeader() {
   return { Authorization: `Bearer ${token}` };
 }
