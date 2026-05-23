@@ -455,7 +455,7 @@ body {
     color: var(--text-primary);
     max-width: 75%;
     position: relative;
-    min-width: 80px;
+    min-width: 90px;
 }
 
 .message-wrapper:not(.self) .message {
@@ -479,6 +479,8 @@ body {
     gap: 4px;
     margin-top: 4px;
     min-width: 60px;
+    flex-wrap: nowrap;
+    white-space: nowrap;
 }
 
 .message-time {
