@@ -474,7 +474,7 @@ function tampilkanPesan(data) {
     ${contentHTML}
     <div class="message-meta">
       <span class="message-time">${data.time}</span>
-      ${isSelf ? `<span class="message-status ${data.read ? "read" : ""}">${data.read ? "✓✓" : "✓"}</span>` : ""}
+      ${isSelf ? `<span class="message-status">✓</span>` : ""}
     </div>
   </div>
 `;
