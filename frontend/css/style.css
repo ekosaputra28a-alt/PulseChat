@@ -866,7 +866,7 @@ body {
     background: var(--bg-panel);
     border-bottom: 1px solid var(--border);
     flex-shrink: 0;
-    position:sticky;
+    position: sticky;
     top: 0;
     z-index: 10;
 }
@@ -919,6 +919,16 @@ body {
     color: #fff;
 }
 
+.message-status {
+    font-size: 12px;
+    color: var(--text-muted);
+    margin-left: 4px;
+}
+
+.message-status.read {
+    color: #53bdeb;
+}
+
 /* ===== MOBILE RESPONSIVE ===== */
 @media (max-width: 768px) {
 
@@ -962,6 +972,8 @@ body {
     .messages {
         padding-bottom: 110px;
     }
+
+
 
     .message-image {
         max-width: 220px;

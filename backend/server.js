@@ -140,6 +140,7 @@ io.on(
           file: data.file || "",
           fileName: data.fileName || "",
           time: data.time,
+          read: false,
           createdAt: new Date(),
         });
 
@@ -154,7 +155,6 @@ io.on(
       },
     );
 
-
     socket.on("delete_message", async (data) => {
       try {
         const db = getDB();
@@ -162,10 +162,26 @@ io.on(
           _id: new ObjectId(data.messageId),
         });
 
-        io.to(data.roomId)
-          .emit("message_deleted", data.messageId);
+        io.to(data.roomId).emit("message_deleted", data.messageId);
       } catch (error) {
         console.error(err);
+      }
+    });
+
+    socket.on("mark_read", async ({ roomId, reader }) => {
+      try {
+        const db = getDB();
+
+        await db
+          .collection("messages")
+          .updateMany(
+            { roomId, user: { $ne: reader }, read: { $ne: true } },
+            { $set: { read: true } },
+          );
+
+        io.to(roomId).emit("messages_read", { roomId, reader });
+      } catch (error) {
+        console.error("mark_read error:", error);
       }
     });
 

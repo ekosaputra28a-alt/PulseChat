@@ -144,6 +144,11 @@ function buatItemKontak(username) {
     messages.innerHTML = "";
     socket.emit("join_room", currentRoom);
 
+    socket.emit("mark_read", {
+      roomId: currentRoom,
+      reader: user.name,
+    });
+
     fetch(
       `https://pulsechat-production-54e0.up.railway.app/messages?roomId=${currentRoom}`,
     )
@@ -288,6 +293,15 @@ socket.on("message_deleted", (messageId) => {
   if (messageEl) {
     messageEl.remove();
   }
+});
+
+socket.on("messages_read", ({ roomId }) => {
+  if (roomId !== currentRoom) return;
+
+  document.querySelectorAll(".message-status").forEach((el) => {
+    el.textContent = "✓✓";
+    el.classList.add("read");
+  });
 });
 
 /* ===== SEND TEXT ===== */
@@ -459,6 +473,7 @@ function tampilkanPesan(data) {
     ${!isSelf ? `<strong>${data.user || "Unknow"}</strong>` : ""}
     ${contentHTML}
     <span class="message-time">${data.time}</span>
+    ${isSelf ? `<span class="message-status ${data.read ? "read" : ""}">${data.read ? "✓✓" : "✓"}</span>` : ""}
   </div>
   `;
 
@@ -519,78 +534,80 @@ const searchChatClose = document.getElementById("searchChatClose");
 let searchResults = [];
 let searchIndex = 0;
 
-document.querySelector(".chat-header-actions .icon-btn").addEventListener("click", () => {
+document
+  .querySelector(".chat-header-actions .icon-btn")
+  .addEventListener("click", () => {
     searchChatBar.style.display = "flex";
     searchChatInput.focus();
-});
+  });
 
 searchChatClose.addEventListener("click", () => {
-    searchChatBar.style.display = "none";
-    searchChatInput.value = "";
-    clearSearchHighlight();
-    searchResults = [];
-    searchChatCount.textContent = "";
+  searchChatBar.style.display = "none";
+  searchChatInput.value = "";
+  clearSearchHighlight();
+  searchResults = [];
+  searchChatCount.textContent = "";
 });
 
 searchChatInput.addEventListener("input", () => {
-    const q = searchChatInput.value.trim().toLowerCase();
-    clearSearchHighlight();
-    searchResults = [];
-    searchIndex = 0;
+  const q = searchChatInput.value.trim().toLowerCase();
+  clearSearchHighlight();
+  searchResults = [];
+  searchIndex = 0;
 
-    if (!q) {
-        searchChatCount.textContent = "";
-        return;
+  if (!q) {
+    searchChatCount.textContent = "";
+    return;
+  }
+
+  document.querySelectorAll(".message p").forEach((p) => {
+    const text = p.textContent.toLowerCase();
+    if (text.includes(q)) {
+      searchResults.push(p);
+      p.innerHTML = p.textContent.replace(
+        new RegExp(`(${q})`, "gi"),
+        `<mark class="msg-highlight">$1</mark>`,
+      );
     }
+  });
 
-    document.querySelectorAll(".message p").forEach((p) => {
-        const text = p.textContent.toLowerCase();
-        if (text.includes(q)) {
-            searchResults.push(p);
-            p.innerHTML = p.textContent.replace(
-                new RegExp(`(${q})`, "gi"),
-                `<mark class="msg-highlight">$1</mark>`
-            );
-        }
-    });
+  if (searchResults.length === 0) {
+    searchChatCount.textContent = "Tidak ditemukan";
+    return;
+  }
 
-    if (searchResults.length === 0) {
-        searchChatCount.textContent = "Tidak ditemukan";
-        return;
-    }
-
-    searchIndex = 0;
-    updateSearchActive();
+  searchIndex = 0;
+  updateSearchActive();
 });
 
 searchChatNext.addEventListener("click", () => {
-    if (!searchResults.length) return;
-    searchIndex = (searchIndex + 1) % searchResults.length;
-    updateSearchActive();
+  if (!searchResults.length) return;
+  searchIndex = (searchIndex + 1) % searchResults.length;
+  updateSearchActive();
 });
 
 searchChatPrev.addEventListener("click", () => {
-    if (!searchResults.length) return;
-    searchIndex = (searchIndex - 1 + searchResults.length) % searchResults.length;
-    updateSearchActive();
+  if (!searchResults.length) return;
+  searchIndex = (searchIndex - 1 + searchResults.length) % searchResults.length;
+  updateSearchActive();
 });
 
 function updateSearchActive() {
-    document.querySelectorAll(".msg-highlight-active").forEach((el) => {
-        el.classList.remove("msg-highlight-active");
-    });
+  document.querySelectorAll(".msg-highlight-active").forEach((el) => {
+    el.classList.remove("msg-highlight-active");
+  });
 
-    const active = searchResults[searchIndex];
-    active.querySelectorAll(".msg-highlight").forEach((el) => {
-        el.classList.add("msg-highlight-active");
-    });
+  const active = searchResults[searchIndex];
+  active.querySelectorAll(".msg-highlight").forEach((el) => {
+    el.classList.add("msg-highlight-active");
+  });
 
-    active.scrollIntoView({ behavior: "smooth", block: "center" });
-    searchChatCount.textContent = `${searchIndex + 1} / ${searchResults.length}`;
+  active.scrollIntoView({ behavior: "smooth", block: "center" });
+  searchChatCount.textContent = `${searchIndex + 1} / ${searchResults.length}`;
 }
 
 function clearSearchHighlight() {
-    document.querySelectorAll(".message p").forEach((p) => {
-        p.textContent = p.textContent;
-    });
+  document.querySelectorAll(".message p").forEach((p) => {
+    p.textContent = p.textContent;
+  });
 }
