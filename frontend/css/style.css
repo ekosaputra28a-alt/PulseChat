@@ -1035,4 +1035,8 @@ body {
         cursor: pointer;
         margin-right: 10px;
     }
+
+    .message {
+        max-width: 100%;
+    }
 }
