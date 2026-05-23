@@ -13,6 +13,7 @@ import contactRoutes from "./routes/contactRoutes.js";
 import { connectDB, getDB } from "./config/db.js";
 import { ObjectId } from "mongodb";
 import authRoutes from "./routes/authRoutes.js";
+import { verifyToken } from "./middleware/auth.js";
 
 const app = express();
 
@@ -51,7 +52,7 @@ const upload = multer({
 
 app.use("/auth", authRoutes);
 
-app.post("/upload", upload.single("file"), (req, res) => {
+app.post("/upload", verifyToken ,upload.single("file"), (req, res) => {
   res.json({
     fileUrl: `https://pulsechat-production-54e0.up.railway.app/upload/${req.file.filename}`,
     fileName: req.file.originalname,
@@ -67,6 +68,7 @@ const onlineUsers = [];
 
 app.get(
   "/messages",
+  verifyToken,
 
   async (req, res) => {
     const db = getDB();

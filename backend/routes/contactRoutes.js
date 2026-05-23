@@ -1,9 +1,10 @@
 import express from "express";
 import { getDB } from "../config/db.js";
+import { verifyToken } from "../middleware/auth.js";
 
 const router = express.Router();
 
-router.get("/search-users", async (req, res) => {
+router.get("/search-users", verifyToken, async (req, res) => {
     try {
         const db = getDB();
         const { q, me } = req.query;
@@ -21,7 +22,7 @@ router.get("/search-users", async (req, res) => {
     }
 });
 
-router.post("/add-contact", async (req, res) => {
+router.post("/add-contact", verifyToken, async (req, res) => {
     try {
         const db = getDB();
         const { owner, contact } = req.body;
@@ -44,7 +45,7 @@ router.post("/add-contact", async (req, res) => {
     }
 });
 
-router.get("/contacts", async (req, res) => {
+router.get("/contacts", verifyToken, async (req, res) => {
     try {
         const db = getDB();
         const { owner } = req.query;

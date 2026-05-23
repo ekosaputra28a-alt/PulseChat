@@ -6,6 +6,11 @@ window.addEventListener("beforeunload", (e) => {
 const user = JSON.parse(localStorage.getItem("user"));
 if (!user) window.location.href = "auth.html";
 
+const toke = localStorage.getItem("token");
+function authHeader() {
+  return { Authorization: `Bearer ${token}` };
+}
+
 /* ===== ELEMENTS ===== */
 const messages = document.getElementById("messages");
 const messageForm = document.getElementById("messageForm");
@@ -77,6 +82,7 @@ socket.on("online_users", (onlineUsers) => {
 async function loadContacts() {
   const res = await fetch(
     `https://pulsechat-production-54e0.up.railway.app/contacts?owner=${user.name}`,
+    { headers: authHeader() },
   );
   const data = await res.json();
   renderContactList(data);
@@ -145,6 +151,7 @@ function buatItemKontak(username) {
 
     fetch(
       `https://pulsechat-production-54e0.up.railway.app/messages?roomId=${currentRoom}`,
+      { headers: authHeader() }
     )
       .then((res) => res.json())
       .then((data) => data.forEach((msg) => tampilkanPesan(msg)));
@@ -171,9 +178,11 @@ async function cariUser(q) {
   const [searchRes, kontakRes] = await Promise.all([
     fetch(
       `https://pulsechat-production-54e0.up.railway.app/search-users?q=${q}&me=${user.name}`,
+      { headers: authHeader() }
     ),
     fetch(
       `https://pulsechat-production-54e0.up.railway.app/contacts?owner=${user.name}`,
+      { headers: authHeader() }
     ),
   ]);
   const results = await searchRes.json();
@@ -233,7 +242,7 @@ function tampilkanHasilSearch(results, kontakku = []) {
           "https://pulsechat-production-54e0.up.railway.app/add-contact",
           {
             method: "POST",
-            headers: { "Content-Type": "application/json" },
+            headers: { ...authHeader() , "Content-Type": "application/json" },
             body: JSON.stringify({ owner: user.name, contact: username }),
           },
         );
@@ -306,6 +315,7 @@ messageForm.addEventListener("submit", async (e) => {
         "https://pulsechat-production-54e0.up.railway.app/upload",
         {
           method: "POST",
+          headers: authHeader(),
           body: formData,
         },
       );
