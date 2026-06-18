@@ -52,7 +52,7 @@ const upload = multer({
 
 app.use("/auth", authRoutes);
 
-app.post("/upload", verifyToken ,upload.single("file"), (req, res) => {
+app.post("/upload", verifyToken, upload.single("file"), (req, res) => {
   res.json({
     fileUrl: `https://pulsechat-production-54e0.up.railway.app/upload/${req.file.filename}`,
     fileName: req.file.originalname,
